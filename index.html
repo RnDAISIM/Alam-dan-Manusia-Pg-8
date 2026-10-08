@@ -79,5 +79,60 @@
 				start();
 		})());
     </script>
+
+<!-- START OF CONTINUOUS BGM SCRIPT (UNIVERSAL VERSION) -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // 1. SILENCE ISPRING'S INTERNAL AUDIO (Automatically finds the audio tag!)
+        var ispringAudio = document.querySelector("audio"); // <-- This is the magic change
+        
+        setInterval(function() {
+            if (ispringAudio) {
+                ispringAudio.muted = true;
+                ispringAudio.volume = 0;
+            }
+        }, 50);
+
+        // 2. CREATE OUR CONTINUOUS BACKGROUND MUSIC
+        var continuousBGM = new Audio("data/sound1.mp3");
+        continuousBGM.loop = true; 
+        continuousBGM.volume = 0.5; 
+
+        var bgmStarted = false; 
+
+        // 3. START AUDIO FUNCTION
+        var startAudio = function() {
+            if (!bgmStarted) {
+                var playPromise = continuousBGM.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(function() {
+                        bgmStarted = true; 
+                        
+                        // Remove all listeners once playing
+                        window.removeEventListener("mousedown", startAudio, true);
+                        window.removeEventListener("touchstart", startAudio, true);
+                        window.removeEventListener("keydown", startAudio, true);
+                        window.removeEventListener("click", startAudio, true);
+                    }).catch(function(error) {
+                        // Browser blocked autoplay. Will wait for the next click.
+                    });
+                }
+            }
+        };
+
+        // 4. TRY TO PLAY IMMEDIATELY ON LOAD
+        setTimeout(startAudio, 100);
+
+        // 5. AGGRESSIVELY LISTEN FOR THE FIRST INTERACTION
+        window.addEventListener("mousedown", startAudio, true);
+        window.addEventListener("touchstart", startAudio, true);
+        window.addEventListener("keydown", startAudio, true);
+        window.addEventListener("click", startAudio, true);
+    });
+</script>
+<!-- END OF CONTINUOUS BGM SCRIPT -->
+
 </body>
 </html>
